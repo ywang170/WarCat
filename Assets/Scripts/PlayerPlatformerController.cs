@@ -10,6 +10,13 @@ public class PlayerPlatformerController : BattleObject {
 
     private SpriteRenderer spriteRenderer;
     private bool flip = false;
+    private Animator animator;
+
+    protected override void BattleObjectStartInternal()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer> ();
+        animator = GetComponent<Animator>();
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -28,18 +35,13 @@ public class PlayerPlatformerController : BattleObject {
         }
     }
 
-    protected override void BattleObjectStartInternal()
-    {
-        spriteRenderer = GetComponent<SpriteRenderer> (); 
-    }
-
     protected override void UpdateIntention(float deltaTime)
     {
     }
 
     protected override void PerformIntention(float deltaTime)
     {
-        Debug.Log(Time.deltaTime);
+        // Debug.Log(Time.deltaTime);
         Vector2 move = Vector2.zero;
 
         move.x = Input.GetAxis ("Horizontal");
@@ -64,6 +66,14 @@ public class PlayerPlatformerController : BattleObject {
         spriteRenderer.flipX = flip;
 
         targetVelocity = move * maxSpeed;
+        animator.SetFloat("MoveSpeed", Mathf.Abs(move.x));
+        animator.SetFloat("VerticalSpeed", verticalGravityVelocity);
+        animator.SetBool("Grounded", grounded);
+        if(Input.GetMouseButtonDown(0))
+        {
+            Debug.Log(move.x);
+            animator.SetTrigger("Attack");
+        }
     }
 
     protected override void TakeHitInternal(Hit hit)
