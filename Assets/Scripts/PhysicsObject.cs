@@ -141,7 +141,6 @@ public abstract class PhysicsObject : MonoBehaviour {
                         horizontalMovementNormal = currentNormal;
                         verticalGravityVelocity = -0.1f;
                     }
-                    Debug.Log(groundHitBufferList [i].distance);
                     float modifiedDistance = groundHitBufferList [i].distance - shellRadius;
                     minDistance = modifiedDistance < minDistance ? modifiedDistance : minDistance;
                 }

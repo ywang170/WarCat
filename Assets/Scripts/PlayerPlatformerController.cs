@@ -62,29 +62,7 @@ public class PlayerPlatformerController : BattleObject {
 
     protected override void PerformIntention(float deltaTime)
     {
-        // Movement input
-        Vector2 move = Vector2.zero;
-        if (status == 0)
-        {
-            // Can only take input when status is idle/walk/airbone
-            move.x = Input.GetAxis ("Horizontal");
-            move.y = Input.GetAxis ("Vertical");
-        }
-        targetVelocity = move * maxSpeed;
-        animator.SetFloat("MoveSpeed", Mathf.Abs(move.x));
-
-        // Jump input
-        if (Input.GetButtonDown ("Jump") && CanJump()) {
-            verticalGravityVelocity = jumpTakeOffSpeed;
-        } else if (Input.GetButtonUp ("Jump")) 
-        {
-            if (verticalGravityVelocity > 0) {
-                verticalGravityVelocity = verticalGravityVelocity * 0.5f;
-            }
-        }
-        animator.SetFloat("VerticalSpeed", verticalGravityVelocity);
-
-        if (grounded)
+        if (dummyGrounded)
         {
             // Ground attacks input
             if (
@@ -126,6 +104,29 @@ public class PlayerPlatformerController : BattleObject {
             }
         }
         
+        // Movement input
+        Vector2 move = Vector2.zero;
+        if (status == 0)
+        {
+            // Can only take input when status is idle/walk/airbone
+            move.x = Input.GetAxis ("Horizontal");
+            move.y = Input.GetAxis ("Vertical");
+        }
+        targetVelocity = move * maxSpeed;
+        animator.SetFloat("MoveSpeed", Mathf.Abs(move.x));
+
+        // Jump input
+        if (Input.GetButtonDown ("Jump") && CanJump()) {
+            verticalGravityVelocity = jumpTakeOffSpeed;
+        } else if (Input.GetButtonUp ("Jump")) 
+        {
+            if (verticalGravityVelocity > 0) {
+                verticalGravityVelocity = verticalGravityVelocity * 0.5f;
+            }
+        }
+        animator.SetFloat("VerticalSpeed", verticalGravityVelocity);
+
+        
         // Flip character
         if (move.x > 0)
         {
@@ -142,7 +143,6 @@ public class PlayerPlatformerController : BattleObject {
 
     protected override bool CanJump()
     {
-        // All previous condition plus status is 0
         return base.CanJump() && status == 0;
     }
 

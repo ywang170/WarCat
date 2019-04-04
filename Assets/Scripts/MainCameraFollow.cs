@@ -6,23 +6,41 @@ public class MainCameraFollow : MonoBehaviour
 {
 
     public Transform followingTarget;
-    public float maxYCoord;
-    public float minYCoord;
-    public float maxXCoord;
-    public float minXCoord;
-    public float bestYDistanceToTarget;
-    public float maxYDistanceToTarget; // positive value, how much camera can above target
-    public float minYDistanceToTarget; // negative value, how much camera can below target
-    public float bestXDistanceToTarget;
-    public float maxXDistanceToTarget;
-    public float minXDistanceToTarget;
-    public bool affectedByFlip;
+    public float mapLeftBorderCoord;
+    public float mapRightBorderCoord;
+    public float mapTopBorderCoord;
+    public float mapBottomBorderCoord;
+    public float bestYDistanceToTarget = 1;
+    public float bestXDistanceToTarget = 3;
+    public float characterWidth;
+    public float characterHeight;
+    public bool affectedByFlip = true;
+
+    private float maxYCoord = 4;
+    private float minYCoord = -2;
+    private float maxXCoord = 7;
+    private float minXCoord = -7;
+    private float maxYDistanceToTarget = 3; // positive value, how much camera can above target
+    private float minYDistanceToTarget = -3; // negative value, how much camera can below target
+    private float maxXDistanceToTarget = 7;
+    private float minXDistanceToTarget = -7;
 
     private PlayerPlatformerController playerController;
     private float previousTargetX;
 
     private void Start()
     {
+        float cameraVerticalSize   = (float)(Camera.main.orthographicSize * 2.0);
+        float cameraHorizontalSize = cameraVerticalSize * Screen.width / Screen.height;
+        maxXCoord = mapRightBorderCoord - cameraHorizontalSize / 2;
+        minXCoord = mapLeftBorderCoord + cameraHorizontalSize / 2;
+        maxYCoord = mapTopBorderCoord - cameraVerticalSize / 2;
+        minYCoord = mapBottomBorderCoord + cameraVerticalSize / 2;
+        maxXDistanceToTarget = (cameraHorizontalSize - characterWidth) / 2;
+        minXDistanceToTarget = -maxXDistanceToTarget;
+        maxYDistanceToTarget = (cameraVerticalSize - characterHeight) / 2;
+        minYDistanceToTarget = -maxYDistanceToTarget;
+
         if (affectedByFlip)
         {
             playerController = followingTarget.GetComponent<PlayerPlatformerController>();
