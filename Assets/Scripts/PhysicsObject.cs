@@ -16,6 +16,9 @@ public abstract class PhysicsObject : MonoBehaviour {
     protected bool grounded;
     // Set this to positive value to jump
     protected float verticalGravityVelocity;
+    // To prevent some uneven on ground causing "ungrounded"
+    // We have this dummyGrounded to trick animator
+    protected bool dummyGrounded;
 
     private Vector2 horizontalMovementNormal;
     private Rigidbody2D rb2d;
@@ -26,6 +29,7 @@ public abstract class PhysicsObject : MonoBehaviour {
 
     private const float minMoveDistance = 0.001f;
     private const float shellRadius = 0.01f;
+    private const float verticalShellRadiusExtra = 0.1f;
     private const float verticalGravityVelocityMaxSpeed = -10f;
 
     void OnEnable()
@@ -52,7 +56,7 @@ public abstract class PhysicsObject : MonoBehaviour {
 
     protected abstract void PhysicsObjectUpdateInternal(float deltaTime);
 
-    protected bool CanJump()
+    protected virtual bool CanJump()
     {
         return !ignoreGravity && grounded && horizontalMovementNormal.y > minGroundNormalY;
     }
@@ -85,6 +89,7 @@ public abstract class PhysicsObject : MonoBehaviour {
 
         // By default we want to fall even play has no input (If ground suddenly disappear, etc)
         grounded = false;
+        dummyGrounded = false;
 
         // Move horizontally
         Movement (moveAlongGround * deltaPosition.x);
@@ -105,12 +110,13 @@ public abstract class PhysicsObject : MonoBehaviour {
     void Movement(Vector2 move, bool verticalMovement = false)
     {
         float distance = move.magnitude;
+        float shellRadiusExtra = verticalMovement ? verticalShellRadiusExtra : 0;
 
         if (distance > minMoveDistance) 
         {
             // Collect all grounds this movement run into
             groundHitBufferList.Clear ();
-            int count = rb2d.Cast (move, contactFilter, hitBuffer, distance + shellRadius);
+            int count = rb2d.Cast (move, contactFilter, hitBuffer, distance + shellRadius + verticalShellRadiusExtra);
             for (int i = 0; i < count; i++) {
                 if (hitBuffer[i].transform.tag == "Ground")
                 {
@@ -120,21 +126,26 @@ public abstract class PhysicsObject : MonoBehaviour {
 
             if (verticalMovement)
             {
-                // Vertical movement
-                // 
+                float minDistance = distance;
                 for (int i = 0; i < groundHitBufferList.Count; i++) 
                 {
                     Vector2 currentNormal = groundHitBufferList[i].normal;
                     if (currentNormal.y > 0)
                     {
-                        horizontalMovementNormal = currentNormal;
+                        dummyGrounded = true;
+                        if (groundHitBufferList[i].distance > distance + shellRadius)
+                        {
+                            continue;
+                        }
                         grounded = true;
+                        horizontalMovementNormal = currentNormal;
                         verticalGravityVelocity = -0.1f;
                     }
-
+                    Debug.Log(groundHitBufferList [i].distance);
                     float modifiedDistance = groundHitBufferList [i].distance - shellRadius;
-                    distance = modifiedDistance < distance ? modifiedDistance : distance;
+                    minDistance = modifiedDistance < minDistance ? modifiedDistance : minDistance;
                 }
+                distance = minDistance;
             } else
             {
                 // Horizontal movement.

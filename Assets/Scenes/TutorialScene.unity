@@ -683,7 +683,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 892703124}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.73, y: 1.55, z: 0}
+  m_LocalPosition: {x: -4.51, y: 1.55, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -752,9 +752,11 @@ MonoBehaviour:
   ignoreGravity: 0
   hitPoint: 0
   invulnerabilityPeriod: 0
-  maxSpeed: 7
+  maxSpeed: 5
   jumpTakeOffSpeed: 7
   alive: 1
+  comboGroundAttackInterval: 0.25
+  comboGroundAttackBufferReceiveTime: 0.1
 --- !u!1 &962088785
 GameObject:
   m_ObjectHideFlags: 0
@@ -1046,6 +1048,8 @@ MonoBehaviour:
   maxSpeed: 7
   jumpTakeOffSpeed: 7
   alive: 1
+  comboGroundAttackInterval: 0.25
+  comboGroundAttackBufferReceiveTime: 0.1
 --- !u!50 &1202159811
 Rigidbody2D:
   serializedVersion: 4

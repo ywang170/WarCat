@@ -16,8 +16,9 @@ public abstract class BattleObject : PhysicsObject
     public int hitPoint;
     public float invulnerabilityPeriod = 0f;
 
-    private double intention = 0;
-    private Queue<double> nextIntentions;
+    protected double status = 0;
+    protected Queue<double> nextIntentions;
+
     private Dictionary<BattleObject, int> attackerHitSerialMap;
 
     // Start
