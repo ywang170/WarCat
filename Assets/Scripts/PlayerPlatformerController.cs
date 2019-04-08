@@ -19,12 +19,16 @@ public class PlayerPlatformerController : BattleObject {
     public float comboGroundAttackInterval = 0.25f;
     public float comboGroundAttackBufferReceiveTime = 0.1f;
 
+    public Transform groundAttackWavePrefab;
+
     private SpriteRenderer spriteRenderer;
     private Animator animator;
 
     private bool flip = false;
     private float lastGroundAttackTimePassed = 99999f;
     private bool groundAttackBuffer = false;
+    private float guardRecoverRemaining = 0f;
+    private float hittedRecoverRemaining = 0f;
 
 
     protected override void BattleObjectStartInternal()
@@ -50,57 +54,102 @@ public class PlayerPlatformerController : BattleObject {
         }
     }
 
+    private void groundAttack()
+    {
+        Vector3 position = transform.position;
+        // position.y -= 0.1f;
+        position.z = -1;
+        Quaternion quaternion = flip ? Quaternion.Euler(new Vector3(0, 180, 0)) : Quaternion.identity;
+        Instantiate(groundAttackWavePrefab, position, quaternion);
+    }
+
     protected override void UpdateIntention(float deltaTime)
     {
-        // Setup some fields not affected by user input.
-        lastGroundAttackTimePassed = 
-            Mathf.Min(
-                lastGroundAttackTimePassed + deltaTime, 
-                comboGroundAttackInterval);
-        animator.SetBool("Grounded", dummyGrounded);
     }
 
     protected override void PerformIntention(float deltaTime)
     {
+        animator.SetBool("Grounded", dummyGrounded);
         if (dummyGrounded)
         {
-            // Ground attacks input
-            if (
-                Input.GetMouseButtonDown(0) && 
-                !groundAttackBuffer &&
-                status <= 1 &&
-                lastGroundAttackTimePassed >= comboGroundAttackBufferReceiveTime)
+            switch(status)
             {
-                // Buffer attack intention.
-                groundAttackBuffer = true;
-            }
-            // When attack ends
-            if (lastGroundAttackTimePassed >= comboGroundAttackInterval)
-            {
-                // When previous attack ends.
-                if (groundAttackBuffer)
-                {
-                    // Land attack
-                    groundAttackBuffer = false;
-                    lastGroundAttackTimePassed = 0f;
-                    animator.SetTrigger("Attack");
-                    status = 1;
-                }
-                else
-                {
-                    // Back to idle
-                    status = 0;
-                }
+                case 0:
+                case 1: // Idle/Move/Airbone/Ground attack
+                    lastGroundAttackTimePassed = 
+                        Mathf.Min(
+                            lastGroundAttackTimePassed + deltaTime, 
+                            comboGroundAttackInterval);
+                    // Ground attacks input
+                    if (
+                        Input.GetMouseButtonDown(0) && 
+                        !groundAttackBuffer &&
+                        lastGroundAttackTimePassed >= comboGroundAttackBufferReceiveTime)
+                    {
+                        // Buffer attack intention.
+                        groundAttackBuffer = true;
+                    }
+                    // When attack ends
+                    if (lastGroundAttackTimePassed >= comboGroundAttackInterval)
+                    {
+                        // When previous attack ends.
+                        if (groundAttackBuffer)
+                        {
+                            // Land attack
+                            groundAttackBuffer = false;
+                            lastGroundAttackTimePassed = 0f;
+                            animator.SetTrigger("Attack");
+                            status = 1;
+                            groundAttack();
+                        }
+                        else
+                        {
+                            // Back to idle
+                            status = 0;
+                        }
+                    }
+                    break;
+                case 2: // Air attack
+                    break;
+                case 3: // Guard
+                    guardRecoverRemaining = Mathf.Max(guardRecoverRemaining - deltaTime, 0);
+                    if (guardRecoverRemaining <= 0)
+                    {
+                        status = 0;
+                    }
+                    break;
+                case 4: // Hitted
+                    hittedRecoverRemaining = Mathf.Max(hittedRecoverRemaining - deltaTime, 0);
+                    if (hittedRecoverRemaining <= 0)
+                    {
+                        status = 0;
+                    }
+                    break;
+                default:
+                    break;
             }
         } else
         {
-            // Clean up some fields
-            if (status == 1)
+            switch(status)
             {
-                // Clean up ground attack
-                groundAttackBuffer = false;
-                lastGroundAttackTimePassed = 9999f;
-                status = 0;
+                case 0: // Idle/Move/Airbone
+                    break;
+                case 1: // Ground attack
+                    groundAttackBuffer = false;
+                    lastGroundAttackTimePassed = 9999f;
+                    status = 0;
+                    break;
+                case 2: // Air attack
+                    break;
+                case 3: // Guard
+                    guardRecoverRemaining = 0;
+                    status = 0;
+                    break;
+                case 4: // Hitted
+                    hittedRecoverRemaining = Mathf.Max(hittedRecoverRemaining - deltaTime, 0);
+                    break;
+                default:
+                    break;
             }
         }
         

@@ -757,6 +757,8 @@ MonoBehaviour:
   alive: 1
   comboGroundAttackInterval: 0.25
   comboGroundAttackBufferReceiveTime: 0.1
+  groundAttackWavePrefab: {fileID: 8357898510729724997, guid: ea05610bfce98724a9c8dedf3dce9264,
+    type: 3}
 --- !u!1 &962088785
 GameObject:
   m_ObjectHideFlags: 0
@@ -1050,6 +1052,7 @@ MonoBehaviour:
   alive: 1
   comboGroundAttackInterval: 0.25
   comboGroundAttackBufferReceiveTime: 0.1
+  groundAttackWavePrefab: {fileID: 0}
 --- !u!50 &1202159811
 Rigidbody2D:
   serializedVersion: 4
