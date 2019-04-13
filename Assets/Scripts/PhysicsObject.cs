@@ -8,6 +8,8 @@ public abstract class PhysicsObject : MonoBehaviour {
     public float minGroundNormalY = .65f;
     // Is the character affected by gravity
     public bool ignoreGravity = false;
+    // Gravity multiplier
+    public float gravityMultiplier = 1f;
 
     // Desired velocity. While grounded and affected by velocity, this value
     // will be normalized. Otherwise the real velocity will be as it is.
@@ -73,7 +75,7 @@ public abstract class PhysicsObject : MonoBehaviour {
             velocity.x = targetVelocity.x;
             if (!grounded)
             {
-                verticalGravityVelocity += Physics2D.gravity.y * Time.deltaTime;
+                verticalGravityVelocity += Physics2D.gravity.y * Time.deltaTime * gravityMultiplier;
                 verticalGravityVelocity = Mathf.Max(verticalGravityVelocity, verticalGravityVelocityMaxSpeed);
             } else if (horizontalMovementNormal.y < minGroundNormalY)
             {

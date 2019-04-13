@@ -757,6 +757,8 @@ MonoBehaviour:
   alive: 1
   comboGroundAttackInterval: 0.25
   comboGroundAttackBufferReceiveTime: 0.1
+  airAttackLasting: 0.15
+  airAttackSpeed: 5
   groundAttackWavePrefab: {fileID: 8357898510729724997, guid: ea05610bfce98724a9c8dedf3dce9264,
     type: 3}
 --- !u!1 &962088785
@@ -1052,6 +1054,8 @@ MonoBehaviour:
   alive: 1
   comboGroundAttackInterval: 0.25
   comboGroundAttackBufferReceiveTime: 0.1
+  airAttackLasting: 0.5
+  airAttackSpeed: 20
   groundAttackWavePrefab: {fileID: 0}
 --- !u!50 &1202159811
 Rigidbody2D:
@@ -1526,9 +1530,10 @@ EdgeCollider2D:
   - {x: -13.915898, y: -3.637358}
   - {x: -10.563904, y: -3.4024067}
   - {x: -7.8744063, y: -3.230834}
+  - {x: 6.3069797, y: -3.8638654}
   - {x: 8.0170555, y: -4.054125}
   - {x: 12.527579, y: -3.7911234}
-  - {x: 15.475452, y: -3.9260783}
+  - {x: 15.63086, y: -3.9778585}
   - {x: 15.679031, y: 7.6328044}
 --- !u!1 &2079909300
 GameObject:

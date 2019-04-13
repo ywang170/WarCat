@@ -18,6 +18,9 @@ public class PlayerPlatformerController : BattleObject {
     public bool alive = true;
     public float comboGroundAttackInterval = 0.25f;
     public float comboGroundAttackBufferReceiveTime = 0.1f;
+    public float airAttackLasting = 0.1f;
+    public float airAttackSpeed = 10;
+    public int airAttackTimesRemaining = 1;
 
     public Transform groundAttackWavePrefab;
 
@@ -29,6 +32,7 @@ public class PlayerPlatformerController : BattleObject {
     private bool groundAttackBuffer = false;
     private float guardRecoverRemaining = 0f;
     private float hittedRecoverRemaining = 0f;
+    private float airAttackRemaining = 0f;
 
 
     protected override void BattleObjectStartInternal()
@@ -54,13 +58,39 @@ public class PlayerPlatformerController : BattleObject {
         }
     }
 
+    private void resetGroundAttackProperties()
+    {
+        groundAttackBuffer = false;
+        lastGroundAttackTimePassed = 9999f;
+    }
+
+    private void resetAirAttackProperties()
+    {
+        airAttackRemaining = 0f;
+        ignoreGravity = false;
+    }
+
     private void groundAttack()
     {
+        // Initiate attack
+        groundAttackBuffer = false;
+        lastGroundAttackTimePassed = 0f;
+        animator.SetTrigger("Attack");
+        status = 1;
+        // Release wave
         Vector3 position = transform.position;
-        // position.y -= 0.1f;
         position.z = -1;
         Quaternion quaternion = flip ? Quaternion.Euler(new Vector3(0, 180, 0)) : Quaternion.identity;
         Instantiate(groundAttackWavePrefab, position, quaternion);
+    }
+
+    private void airAttack()
+    {
+        airAttackTimesRemaining--;
+        airAttackRemaining = airAttackLasting;
+        ignoreGravity = true;
+        animator.SetTrigger("Attack");
+        status = 2;
     }
 
     protected override void UpdateIntention(float deltaTime)
@@ -69,9 +99,12 @@ public class PlayerPlatformerController : BattleObject {
 
     protected override void PerformIntention(float deltaTime)
     {
+        Vector2 move = Vector2.zero;
         animator.SetBool("Grounded", dummyGrounded);
+
         if (dummyGrounded)
         {
+            airAttackTimesRemaining = 1;
             switch(status)
             {
                 case 0:
@@ -95,11 +128,6 @@ public class PlayerPlatformerController : BattleObject {
                         // When previous attack ends.
                         if (groundAttackBuffer)
                         {
-                            // Land attack
-                            groundAttackBuffer = false;
-                            lastGroundAttackTimePassed = 0f;
-                            animator.SetTrigger("Attack");
-                            status = 1;
                             groundAttack();
                         }
                         else
@@ -110,6 +138,8 @@ public class PlayerPlatformerController : BattleObject {
                     }
                     break;
                 case 2: // Air attack
+                    resetAirAttackProperties();
+                    status = 0;
                     break;
                 case 3: // Guard
                     guardRecoverRemaining = Mathf.Max(guardRecoverRemaining - deltaTime, 0);
@@ -122,6 +152,7 @@ public class PlayerPlatformerController : BattleObject {
                     hittedRecoverRemaining = Mathf.Max(hittedRecoverRemaining - deltaTime, 0);
                     if (hittedRecoverRemaining <= 0)
                     {
+                        gravityMultiplier = 1f;
                         status = 0;
                     }
                     break;
@@ -130,22 +161,35 @@ public class PlayerPlatformerController : BattleObject {
             }
         } else
         {
+            resetGroundAttackProperties();
             switch(status)
             {
-                case 0: // Idle/Move/Airbone
+                case 0: // Airbone
+                    if (Input.GetMouseButtonDown(0) && airAttackTimesRemaining > 0)
+                    {
+                        airAttack();
+                    }
                     break;
-                case 1: // Ground attack
-                    groundAttackBuffer = false;
-                    lastGroundAttackTimePassed = 9999f;
+                case 1: // Ground attack, falls in middle, cancel attack
                     status = 0;
                     break;
                 case 2: // Air attack
+                    airAttackRemaining = Mathf.Max(airAttackRemaining - deltaTime, 0);
+                    if (airAttackRemaining <= 0)
+                    {
+                        resetAirAttackProperties();
+                        status = 0;
+                    } else
+                    {
+                        move.x = flip ? -airAttackSpeed : airAttackSpeed;
+                    }
                     break;
-                case 3: // Guard
+                case 3: // Guard, falls in middle, cancel guard
                     guardRecoverRemaining = 0;
                     status = 0;
                     break;
-                case 4: // Hitted
+                case 4: // Hitted falls in middle or hitted in air, keep status till grounded
+                    gravityMultiplier = 10f;
                     hittedRecoverRemaining = Mathf.Max(hittedRecoverRemaining - deltaTime, 0);
                     break;
                 default:
@@ -154,7 +198,6 @@ public class PlayerPlatformerController : BattleObject {
         }
         
         // Movement input
-        Vector2 move = Vector2.zero;
         if (status == 0)
         {
             // Can only take input when status is idle/walk/airbone
@@ -167,7 +210,8 @@ public class PlayerPlatformerController : BattleObject {
         // Jump input
         if (Input.GetButtonDown ("Jump") && CanJump()) {
             verticalGravityVelocity = jumpTakeOffSpeed;
-        } else if (Input.GetButtonUp ("Jump")) 
+        }
+        else if (Input.GetButtonUp ("Jump")) 
         {
             if (verticalGravityVelocity > 0) {
                 verticalGravityVelocity = verticalGravityVelocity * 0.5f;
@@ -192,12 +236,13 @@ public class PlayerPlatformerController : BattleObject {
 
     protected override bool CanJump()
     {
-        return base.CanJump() && status == 0;
+        return base.CanJump() && status <= 1;
     }
 
     protected override void TakeHitInternal(Hit hit)
     {
-        throw new System.NotImplementedException();
+        resetGroundAttackProperties();
+        resetAirAttackProperties();
     }
 
     public override bool TrySwitchIntention(double newIntention)
