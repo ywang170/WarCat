@@ -602,7 +602,7 @@ GameObject:
   - component: {fileID: 892703129}
   - component: {fileID: 892703130}
   m_Layer: 0
-  m_Name: mainChara
+  m_Name: MainCharacter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -965,7 +965,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1251891490}
   m_Layer: 8
-  m_Name: tutorialBackgroundStormGroup
+  m_Name: TutorialBackgroundStormGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1292,7 +1292,7 @@ GameObject:
   - component: {fileID: 1918350508}
   - component: {fileID: 1918350510}
   m_Layer: 8
-  m_Name: tutorialBackground
+  m_Name: TutorialBackground
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
