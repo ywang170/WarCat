@@ -36,7 +36,7 @@ public class PlayerPlatformerController : BattleObject {
     private float hittedRecoverRemaining = 0f;
     private float airAttackRemaining = 0f;
     private float airAttackWaveSpeedMultiplier = 0.05f;
-    private int airAttackTimesRemaining = 1;
+    private int airAttackTimesRemaining = 2;
 
 
     protected override void BattleObjectStartInternal()
