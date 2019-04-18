@@ -18,14 +18,16 @@ public class PlayerPlatformerController : BattleObject {
     public bool alive = true;
     public float comboGroundAttackInterval = 0.25f;
     public float comboGroundAttackBufferReceiveTime = 0.1f;
-    public float airAttackLasting = 0.1f;
-    public float airAttackSpeed = 10;
-    public int airAttackTimesRemaining = 1;
+    public float airAttackLasting = 0.2f;
+    public float airAttackSpeed = 3;
+    public int airAttackMaxTimes = 2;
 
     public Transform groundAttackWavePrefab;
+    public Transform airAttackWavePrefab;
 
     private SpriteRenderer spriteRenderer;
     private Animator animator;
+    private Transform airAttackWave;
 
     private bool flip = false;
     private float lastGroundAttackTimePassed = 99999f;
@@ -33,6 +35,8 @@ public class PlayerPlatformerController : BattleObject {
     private float guardRecoverRemaining = 0f;
     private float hittedRecoverRemaining = 0f;
     private float airAttackRemaining = 0f;
+    private float airAttackWaveSpeedMultiplier = 0.045f;
+    private int airAttackTimesRemaining = 1;
 
 
     protected override void BattleObjectStartInternal()
@@ -68,6 +72,10 @@ public class PlayerPlatformerController : BattleObject {
     {
         airAttackRemaining = 0f;
         ignoreGravity = false;
+        if (airAttackWave != null)
+        {
+            Destroy(airAttackWave.gameObject);
+        }
     }
 
     private void groundAttack()
@@ -86,11 +94,17 @@ public class PlayerPlatformerController : BattleObject {
 
     private void airAttack()
     {
+        // Initiate attack
         airAttackTimesRemaining--;
         airAttackRemaining = airAttackLasting;
         ignoreGravity = true;
         animator.SetTrigger("Attack");
         status = 2;
+        // Release wave
+        Vector3 position = transform.position;
+        position.z = -1;
+        Quaternion quaternion = flip ? Quaternion.Euler(new Vector3(0, 180, 0)) : Quaternion.identity;
+        airAttackWave = Instantiate(airAttackWavePrefab, position, quaternion);
     }
 
     protected override void UpdateIntention(float deltaTime)
@@ -104,7 +118,7 @@ public class PlayerPlatformerController : BattleObject {
 
         if (dummyGrounded)
         {
-            airAttackTimesRemaining = 1;
+            airAttackTimesRemaining = airAttackMaxTimes;
             switch(status)
             {
                 case 0:
@@ -182,6 +196,7 @@ public class PlayerPlatformerController : BattleObject {
                     } else
                     {
                         move.x = flip ? -airAttackSpeed : airAttackSpeed;
+                        airAttackWave.localScale += new Vector3(Mathf.Abs(move.x * airAttackWaveSpeedMultiplier), 0, 0);
                     }
                     break;
                 case 3: // Guard, falls in middle, cancel guard
