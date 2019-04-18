@@ -18,8 +18,8 @@ public class PlayerPlatformerController : BattleObject {
     public bool alive = true;
     public float comboGroundAttackInterval = 0.25f;
     public float comboGroundAttackBufferReceiveTime = 0.1f;
-    public float airAttackLasting = 0.2f;
-    public float airAttackSpeed = 3;
+    public float airAttackLasting = 0.15f;
+    public float airAttackSpeed = 4;
     public int airAttackMaxTimes = 2;
 
     public Transform groundAttackWavePrefab;
@@ -35,7 +35,7 @@ public class PlayerPlatformerController : BattleObject {
     private float guardRecoverRemaining = 0f;
     private float hittedRecoverRemaining = 0f;
     private float airAttackRemaining = 0f;
-    private float airAttackWaveSpeedMultiplier = 0.045f;
+    private float airAttackWaveSpeedMultiplier = 0.05f;
     private int airAttackTimesRemaining = 1;
 
 
