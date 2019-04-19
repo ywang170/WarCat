@@ -24,6 +24,7 @@ public class PlayerPlatformerController : BattleObject {
 
     public Transform groundAttackWavePrefab;
     public Transform airAttackWavePrefab;
+    public DialogSystem dialogSystem;
 
     private SpriteRenderer spriteRenderer;
     private Animator animator;
@@ -90,6 +91,7 @@ public class PlayerPlatformerController : BattleObject {
         position.z = -1;
         Quaternion quaternion = flip ? Quaternion.Euler(new Vector3(0, 180, 0)) : Quaternion.identity;
         Instantiate(groundAttackWavePrefab, position, quaternion);
+        dialogSystem.SetNextWord("Scum!!", 1f, true);
     }
 
     private void airAttack()
@@ -105,6 +107,8 @@ public class PlayerPlatformerController : BattleObject {
         position.z = -1;
         Quaternion quaternion = flip ? Quaternion.Euler(new Vector3(0, 180, 0)) : Quaternion.identity;
         airAttackWave = Instantiate(airAttackWavePrefab, position, quaternion);
+        // Say something
+        dialogSystem.SetNextWord("Dieeee!", 0.5f, true);
     }
 
     protected override void UpdateIntention(float deltaTime)
