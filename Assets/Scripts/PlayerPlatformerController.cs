@@ -151,7 +151,7 @@ public class PlayerPlatformerController : BattleObject {
                             comboGroundAttackInterval);
                     // Ground attacks input
                     if (
-                        Input.GetMouseButtonDown(0) && 
+                        ActionInputUtils.GetAttackButton() && 
                         !groundAttackBuffer &&
                         lastGroundAttackTimePassed >= comboGroundAttackBufferReceiveTime)
                     {
@@ -201,7 +201,7 @@ public class PlayerPlatformerController : BattleObject {
             switch(status)
             {
                 case 0: // Airbone
-                    if (Input.GetMouseButtonDown(0) && airAttackTimesRemaining > 0)
+                    if (ActionInputUtils.GetAttackButton() && airAttackTimesRemaining > 0)
                     {
                         airAttack();
                     }
@@ -239,17 +239,17 @@ public class PlayerPlatformerController : BattleObject {
         if (status == 0)
         {
             // Can only take input when status is idle/walk/airbone
-            move.x = Input.GetAxis ("Horizontal");
-            move.y = Input.GetAxis ("Vertical");
+            move.x = ActionInputUtils.GetHorizontalInput();
+            move.y = ActionInputUtils.GetVerticalInput();
         }
         targetVelocity = move * maxSpeed;
         animator.SetFloat("MoveSpeed", Mathf.Abs(move.x));
 
         // Jump input
-        if (Input.GetButtonDown ("Jump") && CanJump()) {
+        if (ActionInputUtils.GetJumpButtonDown() && CanJump()) {
             verticalGravityVelocity = jumpTakeOffSpeed;
         }
-        else if (Input.GetButtonUp ("Jump")) 
+        else if (ActionInputUtils.GetJumpButtonUp()) 
         {
             if (verticalGravityVelocity > 0) {
                 verticalGravityVelocity = verticalGravityVelocity * 0.5f;

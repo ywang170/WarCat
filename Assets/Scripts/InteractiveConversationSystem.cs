@@ -82,6 +82,7 @@ public class InteractiveConversationSystem : MonoBehaviour
         }
         // Stop time flow
         Time.timeScale = 0;
+        ActionInputUtils.SetActionInputEnable(false);
         // Set up fields for this conversation
         selectedOptions = new int[pages.Length];
         this.pages = pages;
@@ -101,6 +102,7 @@ public class InteractiveConversationSystem : MonoBehaviour
     private void endConversation()
     {
         Time.timeScale = 1;
+        ActionInputUtils.SetActionInputEnable(true);
         conversation.SetActive(false);
     }
 
