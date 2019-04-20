@@ -36,14 +36,21 @@ public class PlayerPlatformerController : BattleObject {
     private float guardRecoverRemaining = 0f;
     private float hittedRecoverRemaining = 0f;
     private float airAttackRemaining = 0f;
-    private float airAttackWaveSpeedMultiplier = 0.05f;
+    private float airAttackWaveSpeedMultiplier = 2.5f;
     private int airAttackTimesRemaining = 2;
+
+    // Some temp field in development
+    private InteractiveConversationSystem interactiveConversationSystem;
 
 
     protected override void BattleObjectStartInternal()
     {
         spriteRenderer = GetComponent<SpriteRenderer> ();
         animator = GetComponent<Animator>();
+        interactiveConversationSystem = 
+            GameObject
+            .Find("InteractiveConversationSystem")
+            .GetComponent<InteractiveConversationSystem>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -60,6 +67,17 @@ public class PlayerPlatformerController : BattleObject {
         if (collision.transform.tag == "Enemy")
         {
             Debug.Log("Collided into enemy");
+            List < ConversationOption > options = new List<ConversationOption>();
+            ConversationOption option0 = new ConversationOption("go to page 0", 0);
+            ConversationOption option1 = new ConversationOption("go to page 1", 1);
+            ConversationOption option2 = new ConversationOption("go to end", -1);
+            options.Add(option0);
+            options.Add(option1);
+            options.Add(option2);
+            ConversationPage[] pages = new ConversationPage[2];
+            pages[0] = new ConversationPage(0, "This is page 0", options, -1);
+            pages[1] = new ConversationPage(0, "This is page 1", options, -1);
+            interactiveConversationSystem.StartConversation("Lalallala", pages);
         }
     }
 
@@ -91,7 +109,7 @@ public class PlayerPlatformerController : BattleObject {
         position.z = -1;
         Quaternion quaternion = flip ? Quaternion.Euler(new Vector3(0, 180, 0)) : Quaternion.identity;
         Instantiate(groundAttackWavePrefab, position, quaternion);
-        dialogSystem.SetNextWord("Scum!!", 1f, true);
+        dialogSystem.SetNextWord("Scum!! You shall die! You are not worthy as my opponent! be gone! cutoff", 1f, true);
     }
 
     private void airAttack()
@@ -200,7 +218,8 @@ public class PlayerPlatformerController : BattleObject {
                     } else
                     {
                         move.x = flip ? -airAttackSpeed : airAttackSpeed;
-                        airAttackWave.localScale += new Vector3(Mathf.Abs(move.x * airAttackWaveSpeedMultiplier), 0, 0);
+                        airAttackWave.localScale += 
+                            new Vector3(Mathf.Abs(move.x * airAttackWaveSpeedMultiplier * deltaTime), 0, 0);
                     }
                     break;
                 case 3: // Guard, falls in middle, cancel guard

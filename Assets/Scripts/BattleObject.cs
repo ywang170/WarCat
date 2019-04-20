@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public struct Hit
+{
+    public int damage;
+    public int power;
+    public bool guardable;
+    public BattleObject attacker;
+    public int serial;
+}
+
 public abstract class BattleObject : PhysicsObject
 {
-    public struct Hit
-    {
-        public int damage;
-        public int power;
-        public bool guardable;
-        public BattleObject attacker;
-        public int serial;
-    }
-
     public int hitPoint;
     public float invulnerabilityPeriod = 0f;
 
