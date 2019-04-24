@@ -68,16 +68,18 @@ public class PlayerPlatformerController : BattleObject {
         {
             Debug.Log("Collided into enemy");
             List < ConversationOption > options = new List<ConversationOption>();
-            ConversationOption option0 = new ConversationOption("go to page 0", 0);
-            ConversationOption option1 = new ConversationOption("go to page 1", 1);
-            ConversationOption option2 = new ConversationOption("go to end", -1);
+            ConversationOption option0 = new ConversationOption("Yes", 0);
+            ConversationOption option1 = new ConversationOption("No", 1);
+            ConversationOption option2 = new ConversationOption("Cancel", -1);
+            ConversationOption option3 = new ConversationOption("Quit", -1);
             options.Add(option0);
             options.Add(option1);
             options.Add(option2);
+            options.Add(option3);
             ConversationPage[] pages = new ConversationPage[2];
-            pages[0] = new ConversationPage(0, "This is page 0", options, -1);
+            pages[0] = new ConversationPage(0, "This is page 0, I think it is time we die, hahahaha. Sad story?", options, -1);
             pages[1] = new ConversationPage(0, "This is page 1", options, -1);
-            interactiveConversationSystem.StartConversation("Lalallala", pages);
+            interactiveConversationSystem.StartConversation("Mysteriou Cube", pages);
         }
     }
 
