@@ -48,6 +48,7 @@ public class InteractiveConversationSystem : MonoBehaviour
     private Text conversationTitle;
     private Text conversationContent;
     private GameObject[] conversationOptions;
+    private GameObject conversationNext;
 
     private ConversationPage[] pages;
     private int currentPageIndex;
@@ -62,13 +63,14 @@ public class InteractiveConversationSystem : MonoBehaviour
             conversation.transform.Find("ConversationContent").GetComponent<Text>();
         conversationOptions = new GameObject[4];
         conversationOptions[0] = 
-            conversation.transform.Find("ConversationOption1").gameObject;
+            conversation.transform.Find("ConversationOption0").gameObject;
         conversationOptions[1] = 
-            conversation.transform.Find("ConversationOption2").gameObject;
+            conversation.transform.Find("ConversationOption1").gameObject;
         conversationOptions[2] = 
-            conversation.transform.Find("ConversationOption3").gameObject;
+            conversation.transform.Find("ConversationOption2").gameObject;
         conversationOptions[3] = 
-            conversation.transform.Find("ConversationOption4").gameObject;
+            conversation.transform.Find("ConversationOption3").gameObject;
+        conversationNext = conversation.transform.Find("ConversationNext").gameObject;
 
         conversation.SetActive(false);
     }
@@ -85,6 +87,10 @@ public class InteractiveConversationSystem : MonoBehaviour
         ActionInputUtils.SetActionInputEnable(false);
         // Set up fields for this conversation
         selectedOptions = new int[pages.Length];
+        for (int i = 0; i < selectedOptions.Length; i ++)
+        {
+            selectedOptions[i] = -1;
+        }
         this.pages = pages;
         conversationTitle.text = title;
         // Set up page display
@@ -96,7 +102,12 @@ public class InteractiveConversationSystem : MonoBehaviour
     public void SelectOption(int optionNumber)
     {
         selectedOptions[currentPageIndex] = optionNumber;
-        showPage(pages[currentPageIndex].options[optionNumber - 1].nextPageIndex);
+        showPage(pages[currentPageIndex].options[optionNumber].nextPageIndex);
+    }
+
+    public void NextPage()
+    {
+        showPage(pages[currentPageIndex].nextPageIndex);
     }
 
     private void endConversation()
@@ -132,5 +143,6 @@ public class InteractiveConversationSystem : MonoBehaviour
 
         }
         // Show and hide next page
+        conversationNext.SetActive(currentPage.nextPageIndex >= 0);
     }
 }

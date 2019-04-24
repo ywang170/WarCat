@@ -1,0 +1,36 @@
+- 0:
+	content: I'm very glad you can come. But as you can see we have already run out of food. There might not be a lot we can help...
+	nextPageIndex: 1
+- 1:
+	content: Actually I wanted to ask... would you like to help us?
+    options:
+      - option: Yes
+		nextPageIndex: 2
+      - option: No
+		nextPageIndex: 5
+- 2:
+	content: Long long time ago, there was a cat king called Neow
+    options:
+      - option:
+		nextPageIndex:
+      - option:
+		nextPageIndex:
+	nextPageIndex:
+- 3:
+	content: Long long time ago, there was a cat king called Neow
+    options:
+      - option:
+		nextPageIndex:
+      - option:
+		nextPageIndex:
+	nextPageIndex:
+- 4:
+	content: Long long time ago, there was a cat king called Neow
+    options:
+      - option:
+		nextPageIndex:
+      - option:
+		nextPageIndex:
+	nextPageIndex:
+- 5:
+	content: I see...very well... farewell stranger
