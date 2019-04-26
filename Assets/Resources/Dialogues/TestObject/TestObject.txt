@@ -1,36 +1,34 @@
-- 0:
-	content: I'm very glad you can come. But as you can see we have already run out of food. There might not be a lot we can help...
-	nextPageIndex: 1
-- 1:
-	content: Actually I wanted to ask... would you like to help us?
-    options:
-      - option: Yes
-		nextPageIndex: 2
-      - option: No
-		nextPageIndex: 5
-- 2:
-	content: Long long time ago, there was a cat king called Neow
-    options:
-      - option:
-		nextPageIndex:
-      - option:
-		nextPageIndex:
-	nextPageIndex:
-- 3:
-	content: Long long time ago, there was a cat king called Neow
-    options:
-      - option:
-		nextPageIndex:
-      - option:
-		nextPageIndex:
-	nextPageIndex:
-- 4:
-	content: Long long time ago, there was a cat king called Neow
-    options:
-      - option:
-		nextPageIndex:
-      - option:
-		nextPageIndex:
-	nextPageIndex:
-- 5:
-	content: I see...very well... farewell stranger
+<pages>
+	<page index="0">
+		<content>I'm very glad you can come. But as you can see we have already run out of food. There might not be a lot we can help...</content>
+		<nextPageIndex>1</nextPageIndex>
+	</page>
+	<page index="1">
+		<content>Actually I wanted to ask... would you like to help us?</content>
+		<options count="2">
+			<option nextPageIndex="2">Yes</option>
+			<option nextPageIndex="5">No</option>
+		</options>
+	</page>
+	<page index="2">
+		<content>I need to double check, are you sure??</content>
+		<options count="2">
+			<option nextPageIndex="2">Yes</option>
+			<option nextPageIndex="3">No</option>
+		</options>
+	</page>
+	<page index="3">
+		<content>I know you are just a hypothetic... hmmmmm</content>
+		<nextPageIndex>4</nextPageIndex>
+	</page>
+	<page index="4">
+		<content>I give you another chance, do you want to help us?</content>
+		<options count="2">
+			<option nextPageIndex="2">I do</option>
+			<option nextPageIndex="5">Nope</option>
+		</options>
+	</page>
+	<page index="5">
+		<content>I see... farewell...</content>
+	</page>
+</pages>

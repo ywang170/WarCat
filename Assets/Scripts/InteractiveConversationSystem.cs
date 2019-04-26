@@ -143,6 +143,6 @@ public class InteractiveConversationSystem : MonoBehaviour
 
         }
         // Show and hide next page
-        conversationNext.SetActive(currentPage.nextPageIndex >= 0);
+        conversationNext.SetActive(currentPage.options == null || currentPage.nextPageIndex >= 0);
     }
 }

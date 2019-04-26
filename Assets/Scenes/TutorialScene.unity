@@ -504,6 +504,7 @@ GameObject:
   - component: {fileID: 546703281}
   - component: {fileID: 546703284}
   - component: {fileID: 546703283}
+  - component: {fileID: 546703285}
   m_Layer: 0
   m_Name: TestDialogueObject
   m_TagString: Enemy
@@ -620,6 +621,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &546703285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 546703280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c170697214f0e4444b2ee12fa1b3c2d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueYaml: {fileID: 4900000, guid: ae2734b54b0f81541be57919261d8889, type: 3}
 --- !u!1 &614165756
 GameObject:
   m_ObjectHideFlags: 0
@@ -1856,7 +1870,7 @@ PrefabInstance:
     - target: {fileID: 1237229693274111191, guid: f9d5ef92afb9a2d4fb1c759ddc37077b,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1237229692976474312, guid: f9d5ef92afb9a2d4fb1c759ddc37077b,
         type: 3}
@@ -1911,6 +1925,11 @@ PrefabInstance:
     - target: {fileID: 1237229692976474312, guid: f9d5ef92afb9a2d4fb1c759ddc37077b,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1237229693034571036, guid: f9d5ef92afb9a2d4fb1c759ddc37077b,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
