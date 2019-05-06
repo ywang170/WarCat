@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DialogSystem : MonoBehaviour
+public class DialogueSystem : MonoBehaviour
 {
 
     public Transform fixer;

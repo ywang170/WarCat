@@ -24,7 +24,6 @@ public class MainCharaAttackWave : MonoBehaviour
     void FixedUpdate()
     {
         timeRemaining -= Time.deltaTime;
-        Debug.Log(timeRemaining);
         if (timeRemaining <= 0)
         {
             Destroy(this.gameObject);

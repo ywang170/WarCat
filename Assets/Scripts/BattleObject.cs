@@ -4,28 +4,44 @@ using UnityEngine;
 
 public struct Hit
 {
-    public int damage;
-    public int power;
+    public float damage;
+    public float power;
     public bool guardable;
+    public int side;
+    public Vector2 position;
     public BattleObject attacker;
-    public int serial;
+
+    public Hit(
+        int damage,
+        int power,
+        bool guardable,
+        int side,
+        Vector2 position,
+        BattleObject attacker = null
+        )
+    {
+        this.damage = damage;
+        this.power = power;
+        this.guardable = guardable;
+        this.side = side;
+        this.position = position;
+        this.attacker = attacker;
+    }
 }
 
 public abstract class BattleObject : PhysicsObject
 {
-    public int hitPoint;
+    public float hitPoint;
     public float invulnerabilityPeriod = 0f;
+    public int side;
 
     protected double status = 0;
     protected Queue<double> nextIntentions;
-
-    private Dictionary<BattleObject, int> attackerHitSerialMap;
 
     // Start
     protected override void PhysicsObjectStartInternal()
     {
         nextIntentions = new Queue<double>();
-        attackerHitSerialMap = new Dictionary<BattleObject, int>();
         BattleObjectStartInternal();
     }
 
@@ -48,16 +64,11 @@ public abstract class BattleObject : PhysicsObject
     // Called by other battle object to deal hit
     public void TakeHit(Hit hit)
     {
-        if (!attackerHitSerialMap.ContainsKey(hit.attacker))
+        // Won't take hit under invulnerability or if attack is from same side  
+        if (invulnerabilityPeriod <= 0 && hit.side != this.side)
         {
-            attackerHitSerialMap.Add(hit.attacker, -1);
-        }
-        if (attackerHitSerialMap[hit.attacker] < hit.serial)
-        {
-            attackerHitSerialMap[hit.attacker] = hit.serial;
             TakeHitInternal(hit);
         }
-       
     }
 
     // Implemented internally to receive hit

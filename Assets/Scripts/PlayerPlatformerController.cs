@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerPlatformerController : BattleObject {
 
@@ -24,41 +25,47 @@ public class PlayerPlatformerController : BattleObject {
 
     public Transform groundAttackWavePrefab;
     public Transform airAttackWavePrefab;
-    public DialogSystem dialogSystem;
 
     private SpriteRenderer spriteRenderer;
     private Animator animator;
     private Transform airAttackWave;
+    private InteractiveConversationSystem interactiveConversationSystem;
+    private DialogueSystem dialogSystem;
+    private Slider HpBar;
 
     private bool flip = false;
     private float lastGroundAttackTimePassed = 99999f;
     private bool groundAttackBuffer = false;
-    private float guardRecoverRemaining = 0f;
-    private float hittedRecoverRemaining = 0f;
+    private float guardRecoveryRemaining = 0f;
+    private float hittedRecoveryRemaining = 0f;
     private float airAttackRemaining = 0f;
     private float airAttackWaveSpeedMultiplier = 2.5f;
     private int airAttackTimesRemaining = 2;
+    private float guardBackPushSpeed = 0;
+
+    private static float guardRecoveryTimeMultiplier = 0.005f;
+    private static float hittedRecoveryTimeMultiplier = 0.01f;
+    private static float hittedGravityMultiplier = 10f;
+    private static float guardBackPushSpeedMultiplier = 0.005f;
 
     // Some temp field in development
-    private InteractiveConversationSystem interactiveConversationSystem;
 
 
     protected override void BattleObjectStartInternal()
     {
         spriteRenderer = GetComponent<SpriteRenderer> ();
         animator = GetComponent<Animator>();
+        dialogSystem =
+            GameObject
+            .Find("DialogueSystem")
+            .GetComponent<DialogueSystem>();
         interactiveConversationSystem = 
             GameObject
             .Find("InteractiveConversationSystem")
             .GetComponent<InteractiveConversationSystem>();
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.transform.tag == "Enemy")
-        {
-            Debug.Log("Run into enemy");
-        }
+        HpBar = GameObject.Find("HpBar").GetComponent<Slider>();
+        hitPoint = 1000;
+        HpBar.value = hitPoint;
     }
 
     private void resetGroundAttackProperties()
@@ -158,15 +165,20 @@ public class PlayerPlatformerController : BattleObject {
                     status = 0;
                     break;
                 case 3: // Guard
-                    guardRecoverRemaining = Mathf.Max(guardRecoverRemaining - deltaTime, 0);
-                    if (guardRecoverRemaining <= 0)
+                    guardRecoveryRemaining = Mathf.Max(guardRecoveryRemaining - deltaTime, 0);
+                    if (guardRecoveryRemaining <= 0)
                     {
                         status = 0;
                     }
+                    else
+                    {
+                        move.x = flip ? guardBackPushSpeed : -guardBackPushSpeed;
+                        flip = move.x > 0;
+                    }
                     break;
                 case 4: // Hitted
-                    hittedRecoverRemaining = Mathf.Max(hittedRecoverRemaining - deltaTime, 0);
-                    if (hittedRecoverRemaining <= 0)
+                    hittedRecoveryRemaining = Mathf.Max(hittedRecoveryRemaining - deltaTime, 0);
+                    if (hittedRecoveryRemaining <= 0)
                     {
                         gravityMultiplier = 1f;
                         status = 0;
@@ -203,12 +215,10 @@ public class PlayerPlatformerController : BattleObject {
                     }
                     break;
                 case 3: // Guard, falls in middle, cancel guard
-                    guardRecoverRemaining = 0;
+                    guardRecoveryRemaining = 0;
                     status = 0;
                     break;
                 case 4: // Hitted falls in middle or hitted in air, keep status till grounded
-                    gravityMultiplier = 10f;
-                    hittedRecoverRemaining = Mathf.Max(hittedRecoverRemaining - deltaTime, 0);
                     break;
                 default:
                     break;
@@ -221,6 +231,7 @@ public class PlayerPlatformerController : BattleObject {
             // Can only take input when status is idle/walk/airbone
             move.x = ActionInputUtils.GetHorizontalInput();
             move.y = ActionInputUtils.GetVerticalInput();
+            flip = move.x < 0;
         }
         targetVelocity = move * maxSpeed;
         animator.SetFloat("MoveSpeed", Mathf.Abs(move.x));
@@ -239,13 +250,6 @@ public class PlayerPlatformerController : BattleObject {
 
         
         // Flip character
-        if (move.x > 0)
-        {
-            flip = false;
-        } else if (move.x < 0)
-        {
-            flip = true;
-        }
         spriteRenderer.flipX = flip;
 
         // Set status in animator
@@ -261,6 +265,39 @@ public class PlayerPlatformerController : BattleObject {
     {
         resetGroundAttackProperties();
         resetAirAttackProperties();
+        if (
+            (status == 0 || status == 3) && 
+            hit.guardable && 
+            dummyGrounded && 
+            hittedFromFront(hit))
+        {
+            status = 3;
+            guardRecoveryRemaining = hit.power * guardRecoveryTimeMultiplier;
+            guardBackPushSpeed = hit.power * guardBackPushSpeedMultiplier;
+        } else
+        {
+            status = 4;
+            hitPoint -= hit.damage;
+            if (hitPoint < 0)
+            {
+                hitPoint = 0;
+                Die();
+            }
+            else
+            {
+                HpBar.value = hitPoint;
+            }
+            if (!dummyGrounded)
+            {
+                gravityMultiplier = hittedGravityMultiplier;
+                hittedRecoveryRemaining = 0;
+            }
+            else
+            {
+                hittedRecoveryRemaining = hit.power * hittedRecoveryTimeMultiplier;
+            }
+            // invulnerabilityPeriod = hittedRecoveryRemaining / 2f;
+        }
     }
 
     public override bool TrySwitchIntention(double newIntention)
@@ -271,5 +308,22 @@ public class PlayerPlatformerController : BattleObject {
     public bool IsFlipped()
     {
         return flip;
+    }
+
+    public void Die()
+    {
+
+    }
+
+    private bool hittedFromFront(Hit hit)
+    {
+        if (flip)
+        {
+            return hit.position.x < transform.position.x;
+        }
+        else
+        {
+            return hit.position.x > transform.position.x;
+        }
     }
 }
